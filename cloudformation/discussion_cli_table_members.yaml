@@ -113,15 +113,6 @@ Resources:
                   {
                     PutRequest: {
                       Item: {
-                        username: "willie*",
-                        isActive: true,
-                        karmaPointsAvailable: 5839
-                      }
-                    }
-                  },
-                  {
-                    PutRequest: {
-                      Item: {
                         username: "young*",
                         isActive: true,
                         karmaPointsAvailable: 839
@@ -160,7 +151,7 @@ Resources:
       Handler: index.handler
       Role:
         Fn::GetAtt: [ LambdaRole , "Arn" ]
-      Runtime: nodejs14.x
+      Runtime: nodejs16.x
       Timeout: 60
   GraphMembers:
     Type: AWS::DynamoDB::Table

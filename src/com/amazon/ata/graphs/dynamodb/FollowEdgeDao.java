@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedList;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import org.checkerframework.checker.units.qual.A;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -31,7 +32,13 @@ public class FollowEdgeDao {
      * @return A list of all follows for the given user
      */
     public PaginatedQueryList<FollowEdge> getAllFollows(String username) {
-        return null;
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("username not provided");
+        }
+        DynamoDBQueryExpression<FollowEdge> queryExpression = new DynamoDBQueryExpression<>();
+        FollowEdge parameter = new FollowEdge(username, null);
+        queryExpression.withHashKeyValues(parameter);
+        return this.mapper.query(FollowEdge.class, queryExpression);
     }
 
     /**
@@ -40,7 +47,17 @@ public class FollowEdgeDao {
      * @return A list of all followers for the given user
      */
     public PaginatedQueryList<FollowEdge> getAllFollowers(String username) {
-        return null;
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("username not provided");
+        }
+        DynamoDBQueryExpression<FollowEdge> queryExpression = new DynamoDBQueryExpression<>();
+        Map<String, AttributeValue> attributeValueMap = new HashMap<>();
+        attributeValueMap.put(":toUsername", new AttributeValue().withS(username));
+
+        queryExpression.withExpressionAttributeValues(attributeValueMap)
+                .withKeyConditionExpression("toUsername = :toUsername");
+
+        return this.mapper.query(FollowEdge.class, queryExpression);
     }
 
     /**
